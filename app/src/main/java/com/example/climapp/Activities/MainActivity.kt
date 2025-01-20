@@ -34,6 +34,7 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Date
 import kotlin.math.roundToInt
+import com.newrelic.agent.android.NewRelic
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
@@ -44,11 +45,15 @@ class MainActivity : AppCompatActivity() {
 
     private val LOCATION_REQUEST_CODE = 101
 
-    private val apiKey = "26a9e285e9f8f993e35cbe2db9ab90df"
+    private val apiKey = "1101ab007281cc591261574d6ae549d4"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        NewRelic.withApplicationToken(
+            "AAd15e79e223b38710c2dbbd72a8a9f1c969b789c8-NRMA"
+        ).start(this.applicationContext)
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
@@ -135,14 +140,17 @@ class MainActivity : AppCompatActivity() {
     private fun getCurrentLocation() {
         if (checkPermissions()) {
             if (isLocationEnabled()) {
+                // Verificar permissões explicitamente
                 if (ActivityCompat.checkSelfPermission(
                         this,
                         android.Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    ) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(
                         this,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
                     ) != PackageManager.PERMISSION_GRANTED
                 ) {
+                    // Solicitar permissões se não estiverem disponíveis
                     requestPermission()
                     return
                 }
@@ -156,10 +164,15 @@ class MainActivity : AppCompatActivity() {
                                 location.latitude.toString(),
                                 location.longitude.toString()
                             )
+                        } else {
+                            Toast.makeText(this, "Não foi possível obter a localização", Toast.LENGTH_SHORT).show()
                         }
                     }
-            // Caso a loc nao esteja ligada
+                    .addOnFailureListener {
+                        Toast.makeText(this, "Erro ao acessar localização: ${it.message}", Toast.LENGTH_SHORT).show()
+                    }
             } else {
+                Toast.makeText(this, "Ative a localização no dispositivo", Toast.LENGTH_SHORT).show()
                 val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                 startActivity(intent)
             }

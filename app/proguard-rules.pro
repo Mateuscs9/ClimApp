@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep the New Relic classes and methods from being obfuscated or removed
+-keep class com.newrelic.** { *; }
+-dontwarn com.newrelic.**
+
+# Keep important attributes needed by New Relic
+-keepattributes Exceptions, Signature, InnerClasses, LineNumberTable

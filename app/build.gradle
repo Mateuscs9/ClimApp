@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id("newrelic")
 }
 
 android {
@@ -41,6 +42,7 @@ android {
 
 dependencies {
     // Depen para funcionamento e testes
+    implementation("com.newrelic.agent.android:android-agent:7.6.2")
     implementation 'androidx.core:core-ktx:1.7.0'
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
